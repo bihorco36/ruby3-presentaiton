@@ -53,7 +53,6 @@ Ractor is an Actor-model abstraction for Ruby that provides thread-safe parallel
 ---
 
 # Ractor
-<br>
 
 ```rb
 a = 1
@@ -65,72 +64,67 @@ r.send(a)  # pass it
 r.take
 # here "I am in Ractor! a=1" would be printed
 ```
+---
+
+# Ractor
+
+```rb{1-16|19-22}
+def tarai(x, y, z) =
+  x <= y ? y : tarai(tarai(x-1, y, z),
+                     tarai(y-1, z, x),
+                     tarai(z-1, x, y))
+require 'benchmark'
+Benchmark.bm do |x|
+  # sequential version
+  x.report('seq'){ 4.times{ tarai(14, 7, 0) } }
+ 
+  # parallel version with ractors
+  x.report('par'){
+    4.times.map do
+      Ractor.new { tarai(14, 7, 0) }
+    end.each(&:take)
+  }
+end
+
+
+Benchmark result:
+          user     system      total        real
+seq  64.560736   0.001101  64.561837 ( 64.562194)
+par  66.422010   0.015999  66.438009 ( 16.685797)
+```
 
 ---
 
 <h1>Type Checking with RBS <a style="font-size:14px;" href="https://github.com/ruby/rbs">[1]</a></h1>
 
-<img src="/rbs.jpg" v-click  class="m-10 h-95 rounded shadow" />
+<img src="/rbs.jpg" class="m-10 h-95 rounded shadow" />
 
 ---
-layout: two-cols
----
-
-<template v-slot:default>
 
 <h1>Type Checking with RBS <a style="font-size:14px;" href="https://github.com/ruby/rbs">[1]</a></h1>
 
-<br>
-
-  ```rb
-  class Badger
-      def initialize(brand)
-        @brand = brand
-      end
-
-      def brand?
-        @brand
-      end
-  end
-
-  class Honey < Badger
-    def initialize(brand: "Honeybadger", sweet: true)
-      super(brand)
-      @sweet = sweet
+```rb
+class Badger
+    def initialize(brand)
+      @brand = brand
     end
 
-    def sweet?
-      @sweet
+    def brand?
+      @brand
     end
-  end
-  ```
+end
 
-</template>
-
-
-<template v-slot:right >
-<br>
-<br>
-<br>
-
-  ```rb
-  class Brand
-    attr_reader brand : String
-
-    def initialize : (brand: String) -> void
+class Honey < Badger
+  def initialize(brand: "Honeybadger", sweet: true)
+    super(brand)
+    @sweet = sweet
   end
 
-  class Honey < Brand
-    @sweet : bool
-
-    def initialize : (brand: String, ?sweet: bool) -> void
-    def sweet? : () -> bool
+  def sweet?
+    @sweet
   end
-
-  ```
-
-</template>
-
+end
+```
 
 ---
 layout: center
@@ -297,5 +291,3 @@ else
   origin
 end
 ```
-
----

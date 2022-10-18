@@ -1,4 +1,4 @@
-# Welcome to [Slidev](https://github.com/slidevjs/slidev)!
+# Ruby >= 3 Presentation
 
 To start the slide show:
 
